@@ -4,31 +4,57 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.runner.RunWith;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
+import io.cucumber.testng.CucumberOptions;
+
+import io.cucumber.testng.TestNGCucumberRunner;
+import io.cucumber.testng.FeatureWrapper;
+import io.cucumber.testng.PickleWrapper;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
 import net.masterthought.cucumber.Reportable;
 
-@RunWith(Cucumber.class)
-//@RunWith(SerenityRunner.class)
-@CucumberOptions(features = { "./src/test/resources/AppFeatures" }, glue = { "stepdefination", "AppHooks" }, plugin = {
+@CucumberOptions(
+		features =  "./resources/AppFeatures" , 
+		glue = { "stepdefination", "AppHooks" },
+		tags=  "@Runt",
+		plugin = {
 		"pretty", "html:test-output", "json:target/cucumberjson/bdd.json", "junit:target/cucumberxml/bdd.xml",
-		 }, monochrome = true, dryRun = false,
-		 tags= "@Run"
-		 // "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:target/cucumber-reports/test.html","json:target/cucumber-report.json"}
-//"de.monochromata.cucumber.report.PrettyReports:target/maven-cucumber-report"
+		 }
+		
+		 
 )
 public class MyTestRunner {
-	//@SuppressWarnings("unchecked")
+
+	private TestNGCucumberRunner testNGCucumberRunner;
+	
+	@BeforeClass(alwaysRun=true)
+	public void setUpClass()throws Exception{
+		testNGCucumberRunner = new TestNGCucumberRunner(this.getClass());
+	}
+	@Test(groups="cucumber", description="Run Cucumber Feature",dataProvider="features")
+	public void feature(PickleWrapper pickleEvent, FeatureWrapper 
+		    cucumberFeature) {
+		testNGCucumberRunner.runScenario(pickleEvent.getPickle());
+			//	getCucumberFeature());
+		
+	//	testNGCucumberRunner.runScenario(pickleEvent.getPickleEvent());
+	}
+	
+	@DataProvider
+	public Object[][] features(){
+		return testNGCucumberRunner.provideScenarios();
+	}
+	
 	
 	@AfterClass
 	public static void tearDown() {
 		File reportOutputDirectory = new File("target/maven-cucumber-report");
-		List<String> jsonFiles = new ArrayList<>();
+		List<String> jsonFiles = new ArrayList<String>();
 		jsonFiles.add("target/cucumberjson/bdd.json");
 		// jsonFiles.add("cucumber-report-2.json");
 

@@ -6,7 +6,6 @@ import com.pages.PaymentPage;
 import com.qa.factory.DriverFactory;
 
 import io.cucumber.java.en.*;
-import io.cucumber.messages.Messages.GherkinDocument.Feature.Step.DataTable;
 
 public class CheckoutPageStep {
 	private CheckOutPage checkoutPage = new CheckOutPage(DriverFactory.getDriver());
